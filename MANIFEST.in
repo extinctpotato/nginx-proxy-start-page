@@ -1,0 +1,2 @@
+include npsp/static/*
+include npsp/templates/*
