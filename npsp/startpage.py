@@ -1,5 +1,8 @@
 from nginxparser_eb import load
-import os
+from flask import Flask, render_template, request
+import os, argparse
+
+nsp = Flask(__name__)
 
 def spsplit(line):
     allowed = ("sp-title", "sp-desc", "sp-icon")
@@ -26,3 +29,19 @@ class NGINX:
                         block_dict.update({"location":element_for_eval[0][1]})
                         sift.append(block_dict)
         return sift
+
+@nsp.route("/")
+def index():
+    config = NGINX(arg.config)
+    locations = config.locations()
+    return render_template("index-template.html", loc = locations, loc_count = len(locations), host = request.headers.get("Host"))
+
+def main():
+    parser = argparse.ArgumentParser("nginx-startpage")
+    parser.add_argument("config", type=str)
+    parser.add_argument("--port", type=str, default=80)
+    arg = parser.parse_args()
+    nsp.run(host='0.0.0.0', debug = False, port=arg.port)
+
+if __name__ == "__main__":
+    main()
