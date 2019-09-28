@@ -3,6 +3,10 @@ from flask import Flask, render_template, request
 import os, argparse
 
 nsp = Flask(__name__)
+parser = argparse.ArgumentParser("nginx-startpage")
+parser.add_argument("config", type=str)
+parser.add_argument("--port", type=str, default=80)
+arg = parser.parse_args()
 
 def spsplit(line):
     allowed = ("sp-title", "sp-desc", "sp-icon")
@@ -37,10 +41,6 @@ def index():
     return render_template("index-template.html", loc = locations, loc_count = len(locations), host = request.headers.get("Host"))
 
 def main():
-    parser = argparse.ArgumentParser("nginx-startpage")
-    parser.add_argument("config", type=str)
-    parser.add_argument("--port", type=str, default=80)
-    arg = parser.parse_args()
     nsp.run(host='0.0.0.0', debug = False, port=arg.port)
 
 if __name__ == "__main__":
