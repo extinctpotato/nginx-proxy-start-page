@@ -23,7 +23,7 @@ class NGINX:
             element_for_eval = self.parsed[0][1][i]
             block_dict = {}
 
-            if element_for_eval[0][0] == "location":
+            if element_for_eval[0][0] == "location" and element_for_eval[0][1] != "/":
                 for j in range(len(element_for_eval[1])):
                     if element_for_eval[1][j][0] == "#":
                         decoration = spsplit(element_for_eval[1][j][1])
