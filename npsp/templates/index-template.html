@@ -60,7 +60,11 @@
 				  <p class="card-text">{{ loc[i]["sp-desc"] }}</p>
 			  </div>
 			  <div class="container" style="float: right; width:300px;">
-				  <a href="{{loc[i]["location"]}}" class="btn float-right btn-primary">Go!</a>
+				  {% if ifr == True %}
+				  	<a href="?url={{loc[i]["location"]}}" class="btn float-right btn-primary">Go!</a>
+				  {% else %}
+				  	<a href="{{loc[i]["location"]}}" class="btn float-right btn-primary">Go!</a>
+				  {% endif %}
 			  </div>
 		  </div>
 	  </div>

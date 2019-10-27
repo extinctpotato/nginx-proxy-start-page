@@ -6,6 +6,7 @@ nsp = Flask(__name__)
 parser = argparse.ArgumentParser("nginx-startpage")
 parser.add_argument("config", type=str)
 parser.add_argument("--port", type=str, default=80)
+parser.add_argument("--iframe", dest="iframe", action="store_true")
 arg = parser.parse_args()
 
 def spsplit(line):
@@ -38,7 +39,11 @@ class NGINX:
 def index():
     config = NGINX(arg.config)
     locations = config.locations()
-    return render_template("index-template.html", loc = locations, loc_count = len(locations), host = request.headers.get("Host"))
+    url = request.args.get('url')
+    if url and arg.iframe:
+        return render_template("index-iframe.html", url = url, host = request.headers.get("Host"))
+    else:
+        return render_template("index-template.html", loc = locations, loc_count = len(locations), host = request.headers.get("Host"), ifr = arg.iframe)
 
 def main():
     nsp.run(host='0.0.0.0', debug = False, port=arg.port)
