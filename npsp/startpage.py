@@ -1,6 +1,6 @@
 from nginxparser_eb import load
 from flask import Flask, render_template, request
-import os, argparse
+import os, argparse, logging
 
 nsp = Flask(__name__)
 parser = argparse.ArgumentParser("nginx-startpage")
@@ -8,6 +8,7 @@ parser.add_argument("config", type=str)
 parser.add_argument("--port", type=str, default=80)
 parser.add_argument("--iframe", dest="iframe", action="store_true")
 arg = parser.parse_args()
+l = logging.getLogger()
 
 def spsplit(line):
     allowed = ("sp-title", "sp-desc", "sp-icon")
@@ -20,8 +21,8 @@ class NGINX:
         self.parsed = load(open(path))
     def locations(self):
         sift = []
-        for i in range(len(self.parsed[0][1])):
-            element_for_eval = self.parsed[0][1][i]
+        for i in range(len(self.parsed[1][1][0][1])):
+            element_for_eval = self.parsed[1][1][0][1][i]
             block_dict = {}
 
             if element_for_eval[0][0] == "location" and element_for_eval[0][1] != "/":
@@ -39,6 +40,10 @@ class NGINX:
 def index():
     config = NGINX(arg.config)
     locations = config.locations()
+
+    l.info(f'nginx config path: {arg.config}')
+    l.info(f'locations len: {len(locations)}')
+
     url = request.args.get('url')
     if url and arg.iframe:
         return render_template("index-iframe.html", url = url, host = request.headers.get("Host"))
@@ -46,7 +51,11 @@ def index():
         return render_template("index-template.html", loc = locations, loc_count = len(locations), host = request.headers.get("Host"), ifr = arg.iframe)
 
 def main():
-    nsp.run(host='0.0.0.0', debug = False, port=arg.port)
+    nsp.run(host='0.0.0.0', debug = True, port=arg.port)
 
 if __name__ == "__main__":
+    logging.basicConfig(format="%(message)s")
+    l.setLevel(logging.INFO)
+
+    l.info("Hello from logger!")
     main()
